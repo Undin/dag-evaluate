@@ -222,14 +222,14 @@ def eval_dag(dag, filename, dag_id=None):
 
     start_time = time.time()
 
-    for train_idx, test_idx in cross_validation.StratifiedKFold(targets, n_folds=5):
+    for train_idx, test_idx in cross_validation.StratifiedKFold(targets, n_folds=10):
         train_data = (feats.iloc[train_idx], targets.iloc[train_idx])
         test_data = (feats.iloc[test_idx], targets.iloc[test_idx])
 
         ms = train_dag(dag, train_data)
         preds = test_dag(dag, ms, test_data)
 
-        acc = mm.quadratic_weighted_kappa(test_data[1], preds)
+        acc = 1 - mm.ce(test_data[1], preds)
         errors.append(acc)
 
     m_errors = float(np.mean(errors))
