@@ -1,9 +1,13 @@
 __author__ = 'Martin'
 
-import custom_models
-from sklearn import decomposition, feature_selection, svm, linear_model, naive_bayes, tree
-import numpy as np
 import json
+
+import numpy as np
+from sklearn import decomposition, feature_selection, svm, linear_model, naive_bayes, tree, neighbors
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier
+from xgboost import XGBClassifier
+
+import custom_models
 
 
 def make_transformer(cls):
@@ -38,6 +42,11 @@ model_names = {
     "logR":         make_predictor(linear_model.LogisticRegression),
     "gaussianNB":   make_predictor(naive_bayes.GaussianNB),
     "DT":           make_predictor(tree.DecisionTreeClassifier),
+    "KNN":          make_predictor(neighbors.KNeighborsClassifier),
+    "bagging":      make_predictor(BaggingClassifier),
+    "randomForest": make_predictor(RandomForestClassifier),
+    "adaBoost":     make_predictor(AdaBoostClassifier),
+    "xgboost":      make_predictor(XGBClassifier),
     "union":        custom_models.Voter,
     "vote":         custom_models.Voter,
 }
@@ -58,6 +67,7 @@ def create_param_set(num_features, num_instances):
     column_counts = list(map(int, column_counts))
 
     feat_frac = [0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1]
+
 
     params = {
         'PCA': {
@@ -85,6 +95,11 @@ def create_param_set(num_features, num_instances):
             'min_samples_leaf': [1, 2, 5, 10, 20]
         },
         'gaussianNB': {},
+        'KNN': {},
+        "bagging": {},
+        "randomForest": {},
+        "adaBoost": {},
+        'xgboost': {},
         'copy': {},
         'kMeans': {},
         'union': {},
