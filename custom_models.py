@@ -1,8 +1,9 @@
 __author__ = 'Martin'
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from scipy import stats
+from sklearn.linear_model import LogisticRegression
 
 
 class KMeansSplitter:
@@ -83,3 +84,45 @@ class Voter(Aggregator):
         if modes.empty:
             return x[0], pd.Series()
         return x[0], pd.Series(modes, index=y[0].index)
+
+class SimpleStacker(Aggregator):
+
+    def __init__(self, cls=LogisticRegression()):
+        self.cls = cls
+
+    def fit(self, x, y, targets):
+        prev_predicts = pd.DataFrame(index=y[0].index)
+        for i in range(len(y)):
+            prev_predicts["f"+str(i)] = y[i]
+        self.cls.fit(prev_predicts, targets)
+
+        return self
+
+    def aggregate(self, x, y):
+        prev_predicts = pd.DataFrame(index=y[0].index)
+        for i in range(len(y)):
+            prev_predicts["f"+str(i)] = y[i]
+        predict_result = self.cls.predict(prev_predicts)
+
+        return x[0], pd.Series(predict_result, index=y[0].index)
+
+class Stacker(Aggregator):
+
+    def __init__(self, cls=LogisticRegression()):
+        self.cls = cls
+
+    def fit(self, x, y, targets):
+        features = x[0].copy(deep=True)
+        for i in range(len(y)):
+            features["f"+str(i)] = y[i]
+        self.cls.fit(features, targets)
+
+        return self
+
+    def aggregate(self, x, y):
+        features = x[0].copy(deep=True)
+        for i in range(len(y)):
+            features["f"+str(i)] = y[i]
+        predict_result = self.cls.predict(features)
+
+        return x[0], pd.Series(predict_result, index=y[0].index)

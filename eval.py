@@ -91,7 +91,10 @@ def train_dag(dag, train_data):
             # of inputs for an aggregator
             if isinstance(model, custom_models.Predictor) and isinstance(targets, pd.Series) and len(targets.unique()) == 1:
                 model = custom_models.ConstantModel(targets.iloc[0])
-            models[m] = model.fit(features, targets)
+            if isinstance(model, custom_models.SimpleStacker) or isinstance(model, custom_models.Stacker):
+                models[m] = model.fit(features, targets, train_data[1])
+            else:
+                models[m] = model.fit(features, targets)
 
             # use the model to process the data
             if isinstance(model, custom_models.Aggregator):

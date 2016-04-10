@@ -36,19 +36,18 @@ def make_predictor(cls):
 model_names = {
     "PCA":          make_transformer(decomposition.PCA),
     "kBest":        make_transformer(feature_selection.SelectKBest),
-    "kMeans":       make_transformer(custom_models.KMeansSplitter),
+    # "kMeans":       make_transformer(custom_models.KMeansSplitter),
     "copy":         [],
     "SVC":          make_predictor(svm.SVC),
     "logR":         make_predictor(linear_model.LogisticRegression),
     "gaussianNB":   make_predictor(naive_bayes.GaussianNB),
     "DT":           make_predictor(tree.DecisionTreeClassifier),
     "KNN":          make_predictor(neighbors.KNeighborsClassifier),
-    # "bagging":      make_predictor(BaggingClassifier),
-    # "randomForest": make_predictor(RandomForestClassifier),
-    # "adaBoost":     make_predictor(AdaBoostClassifier),
-    "xgboost":      make_predictor(XGBClassifier),
-    "union":        custom_models.Voter,
+    # "xgboost":      make_predictor(XGBClassifier),
+    # "union":        custom_models.Voter,
     "vote":         custom_models.Voter,
+    "simpleStacking": custom_models.SimpleStacker,
+    "stacking":     custom_models.Stacker
 }
 
 
@@ -67,7 +66,6 @@ def create_param_set(num_features, num_instances):
     column_counts = list(map(int, column_counts))
 
     feat_frac = [0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1]
-
 
     params = {
         'PCA': {
@@ -96,15 +94,15 @@ def create_param_set(num_features, num_instances):
         },
         'gaussianNB': {},
         'KNN': {},
-        # "bagging": {},
-        # "randomForest": {},
-        # "adaBoost": {},
         'xgboost': {},
         'copy': {},
         'kMeans': {},
         'union': {},
-        'vote': {}
+        'vote': {},
+        'simpleStacking': {},
+        'stacking': {}
     }
+
 
     return json.dumps(params)
 
