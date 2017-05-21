@@ -4,7 +4,7 @@ import pandas as pd
 import utils
 from scoop import futures
 import sys
-from sklearn import cross_validation, preprocessing, decomposition, feature_selection
+from sklearn import cross_validation, preprocessing, decomposition, feature_selection, metrics
 import numpy as np
 import custom_models
 import ml_metrics as mm
@@ -206,7 +206,7 @@ def eval_dag(dag, filename, dag_id=None):
     dag = normalize_dag(dag)
 
     if filename not in input_cache:
-        input_cache[filename] = pd.read_csv('data/'+filename, sep=';')
+        input_cache[filename] = pd.read_csv('data/'+filename, sep=',')
 
     data = input_cache[filename]
 
@@ -229,7 +229,7 @@ def eval_dag(dag, filename, dag_id=None):
         ms = train_dag(dag, train_data)
         preds = test_dag(dag, ms, test_data)
 
-        acc = mm.quadratic_weighted_kappa(test_data[1], preds)
+        acc = metrics.f1_score(test_data[1], preds, average="macro")
         errors.append(acc)
 
     m_errors = float(np.mean(errors))
