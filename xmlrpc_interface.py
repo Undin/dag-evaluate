@@ -48,9 +48,11 @@ class DagEvalServer:
 if __name__ == '__main__':
 
     log_path = sys.argv[1]
+    port = int(sys.argv[2])
     print('log', log_path)
+    print('port', port)
 
-    server = SimpleXMLRPCServer(('localhost', 8080))
+    server = SimpleXMLRPCServer(('localhost', port))
     server.register_instance(DagEvalServer(log_path))
 
     while not stop_server:
